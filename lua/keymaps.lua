@@ -45,4 +45,53 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
--- vim: ts=2 sts=2 sw=2 et
+-----------------------------------------------------------
+-- [[ My keymap]]
+-----------------------------------------------------------
+-- Disable the space bar in normal and visual modes
+vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
+
+-- Remap for dealing with word wrap
+vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+
+-- Space + pv == Netrw
+vim.keymap.set('n', '<leader>pv', vim.cmd.Ex, { desc = 'Netrw' })
+
+-- When in (v)isual mode, you can press (J) or (K)
+-- to (m)ove the list down/up
+-- BONUS: if you have a if/end statements you can move up/down with the below
+-- command. the program will automatically indent the code!!!! INSANE GOOD
+-- if true then
+-- end
+vim.keymap.set('v', '<C-k>', ":m '<-2<CR>gv=gv")
+vim.keymap.set('v', '<C-j>', ":m '>+1<CR>gv=gv")
+
+-- `Ctrl + d` and `Ctrl + u` are half page jumping + zz, the cursor  will
+-- stay in the middle of the page.
+vim.keymap.set('n', '<C-d>', '<C-d>zz')
+vim.keymap.set('n', '<C-u>', '<C-u>zz')
+
+-- Allow us to search terms in the middle of the page.
+vim.keymap.set('n', 'n', 'nzzzv')
+vim.keymap.set('n', 'N', 'Nzzzv')
+
+-- This key mapping allows you to delete the currently selected text in visual
+-- mode without affecting the unnamed clipboard and then paste the previously
+-- yanked text in place of what you just deleted. It's a very handy way to
+-- replace a section of text with something you've copied earlier.
+-- First, yank some text you want to paste later by selecting it (with v for
+-- visual mode or V for visual line mode) and pressing y. Navigate to another
+-- section of text you want to replace. Enter visual mode again (v or V) and
+-- select the text you want to replace. Press <leader>p (which might be Space+p
+-- if your leader is the spacebar). The selected text will be deleted without
+-- affecting the clipboard, and the text you yanked in step 1 will be pasted in
+-- its place.
+vim.keymap.set('x', '<leader>p', [["_dP]])
+
+-- `Space + s` will , the overall effect of this code is to remap the n key in
+-- normal mode to perform a global search and replace operation, using the
+-- contents of the clipboard as both the search and replacement patterns,
+-- and then move the cursor to the left to allow you to start typing immediately
+-- after the replace operation.
+-- vim.keymap.set('n', '<leader>s', [[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]])
