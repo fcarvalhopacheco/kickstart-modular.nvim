@@ -3,17 +3,17 @@
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
--- Make line numbers default
-vim.opt.number = true
--- You can also add relative line numbers, to help with jumping.
---  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
-
--- Enable mouse mode, can be useful for resizing splits for example!
-vim.opt.mouse = 'a'
-
--- Don't show the mode, since it's already in the status line
-vim.opt.showmode = false
+-----------------------------------------------------------
+-- General
+-----------------------------------------------------------
+vim.o.mouse = 'a' -- Enable mouse support
+vim.o.relativenumber = true -- set relative numbered lines
+vim.o.showmode = false -- don't show the mode, since its already in status line
+vim.o.clipboard = 'unnamedplus' -- Copy/paste to system clipboard
+vim.o.breakindent = true -- Enable break indent
+vim.o.swapfile = false -- Don't use swapfile
+vim.o.undofile = true -- enable persistent undo
+vim.o.completeopt = 'menuone,noselect,noinsert'
 
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
@@ -23,30 +23,7 @@ vim.schedule(function()
   vim.opt.clipboard = 'unnamedplus'
 end)
 
--- Enable break indent
-vim.opt.breakindent = true
-
--- Save undo history
-vim.opt.undofile = true
-
--- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-
--- Keep signcolumn on by default
-vim.opt.signcolumn = 'yes'
-
--- Decrease update time
-vim.opt.updatetime = 250
-
--- Decrease mapped sequence wait time
-vim.opt.timeoutlen = 300
-
--- Configure how new splits should be opened
-vim.opt.splitright = true
-vim.opt.splitbelow = true
-
--- Sets how neovim will display certain whitespace characters in the editor.
+-- Sets how neovim will display certain whitespace in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
 vim.opt.list = true
@@ -55,10 +32,96 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
 
--- Show which line your cursor is on
-vim.opt.cursorline = true
+-- Make line numbers default
+vim.wo.number = true
+vim.o.showmatch = true -- Highlight matching parenthesis
+vim.o.foldmethod = 'marker' -- Enable folding (default 'foldmarker')
+vim.o.colorcolumn = '79' -- Line length marker at 80 columns
+vim.o.splitright = true -- Vertical split to the right
+vim.o.splitbelow = true -- Horizontal split to the bottom
 
--- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+-- Case-insensitive searching UNLESS \C or capital in search
+vim.o.ignorecase = true
+vim.o.smartcase = true
 
--- vim: ts=2 sts=2 sw=2 et
+vim.o.linebreak = true -- Wrap on word boundary
+vim.o.laststatus = 3 -- Set global statusline
+
+vim.o.guifont = 'monospace:h17' -- the font used in graphical neovim applications
+vim.o.cmdheight = 2 -- more space in the neovim command line for displaying messages
+vim.o.cursorline = true -- highlight the current line
+vim.o.spelllang = 'en_us' -- Set the spell language to en
+vim.o.spell = true -- Enable spell checking
+
+-- NOTE: You should make sure your terminal supports this
+vim.o.termguicolors = true
+
+-----------------------------------------------------------
+-- Tabs, indent and others
+-----------------------------------------------------------
+vim.o.textwidth = 79
+vim.o.expandtab = true -- Use spaces instead of tabs
+vim.o.shiftwidth = 4 -- Shift 4 spaces when tab
+vim.o.shiftround = true
+vim.o.tabstop = 4 -- 1 tab == 4 spaces
+vim.o.smartindent = true -- Autoindent new lines
+vim.o.softtabstop = 4 -- Tab character that is 4 columns wide.
+vim.o.autoindent = true
+
+vim.o.numberwidth = 4 -- set number column width to 4 {default 4}
+vim.o.signcolumn = 'yes' -- always show the sign column, otherwise it would shift the text each time
+vim.o.wrap = false -- display lines as one long line
+vim.o.scrolloff = 10 -- Always 8 lines while moving up/down
+vim.o.sidescrolloff = 8
+vim.o.autowrite = true -- Automatically write buffer before running certain commands, including running Lua code
+vim.o.infercase = false
+
+-----------------------------------------------------------
+-- Memory, CPU
+-----------------------------------------------------------
+vim.o.timeoutlen = 300
+vim.o.hidden = true -- Enable background buffers
+vim.o.history = 100 -- Remember N lines in history
+vim.o.lazyredraw = true -- Faster scrolling
+vim.o.synmaxcol = 240 -- Max column for syntax highlight
+vim.o.updatetime = 250 -- ms to wait for trigger an event
+
+-----------------------------------------------------------
+-- Others
+-----------------------------------------------------------
+
+vim.o.backup = false -- creates a backup file
+vim.o.conceallevel = 2 -- so that `` is visible in markdown files
+vim.o.fileencoding = 'utf-8' -- the encoding written to a file
+vim.o.hlsearch = false -- highlight all matches on previous search pattern
+vim.o.incsearch = true
+vim.o.pumheight = 10 -- pop up menu height
+vim.o.timeoutlen = 1000 -- time to wait for a mapped sequence to complete (in milliseconds)
+vim.o.writebackup = false -- if a file is being edited by another program (or was written to file while editing with another program), it is not allowed to be edited
+vim.o.undodir = os.getenv 'HOME' .. '/.vim/undodir'
+
+-- Fix markdown indentation settings
+vim.g.markdown_recommended_style = 0
+
+-----------------------------------------------------------
+-- NVIM PYTHON location
+-- vim.g.python3_host_prog = '/usr/local/bin/python3'
+-- reference: https://github.com/CharlesChiuGit/nvimdots.lua/blob/main/lua/core/options.lua
+-----------------------------------------------------------
+local function isempty(s)
+  return s == nil or s == ''
+end
+local function use_if_defined(val, fallback)
+  return val ~= nil and val or fallback
+end
+
+-- custom python provider
+local conda_prefix = os.getenv 'CONDA_PREFIX'
+if not isempty(conda_prefix) then
+  vim.g.python_host_prog = use_if_defined(vim.g.python_host_prog, conda_prefix .. '/bin/python')
+  vim.g.python3_host_prog = use_if_defined(vim.g.python3_host_prog, conda_prefix .. '/bin/python3')
+else
+  vim.g.python_host_prog = use_if_defined(vim.g.python_host_prog, '/Users/fcp/mambaforge/bin/python')
+  vim.g.python3_host_prog = use_if_defined(vim.g.python3_host_prog, '/Users/fcp/mambaforge/bin/python3')
+end
+-----------------------------------------------------------
