@@ -22,7 +22,8 @@ return {
     'jay-babu/mason-nvim-dap.nvim',
 
     -- Add your own debuggers here
-    'leoluz/nvim-dap-go',
+    -- 'leoluz/nvim-dap-go',
+    'mfussenegger/nvim-dap-python',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -78,6 +79,9 @@ return {
     },
   },
   config = function()
+    local function is_empty(s)
+      return s == nil or s == ''
+    end
     local dap = require 'dap'
     local dapui = require 'dapui'
 
@@ -95,6 +99,8 @@ return {
       ensure_installed = {
         -- Update this to ensure that you have the debuggers for the langs you want
         'delve',
+        'python',
+        'debugpy',
       },
     }
 
@@ -144,5 +150,23 @@ return {
         detached = vim.fn.has 'win32' == 0,
       },
     }
+
+    require('dap-python').setup() -- Debug with default settings.
+    -- We can set additional custom config by below mechanism as well
+    table.insert(require('dap').configurations.python, {
+      type = 'python',
+      request = 'launch',
+      name = 'My custom launch configuration',
+      program = '${file}',
+      cwd = vim.fn.getcwd(),
+      console = 'integratedTerminal',
+      pythonPath = function()
+        if not is_empty(vim.env.CONDA_PREFIX) then
+          return vim.env.CONDA_PREFIX .. '/bin/python3'
+        else
+          return '/usr/local/bin/python3'
+        end
+      end,
+    })
   end,
 }
