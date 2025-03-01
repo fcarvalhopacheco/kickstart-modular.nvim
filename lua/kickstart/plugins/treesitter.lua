@@ -7,10 +7,14 @@ return {
     opts = {
       -- Autoinstall languages that are not installed
       ensure_installed = {
+        'awk',
+        'bash',
         'c',
         'cpp',
+        'diff',
         'go',
         'lua',
+        'luadoc',
         'python',
         'rust',
         'tsx',
@@ -19,8 +23,6 @@ return {
         'vimdoc',
         'vim',
         'yaml',
-        'bash',
-        'awk',
         'json',
         'latex',
         'markdown',
